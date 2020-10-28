@@ -1,0 +1,16 @@
+As we know Gaussian Filters are separable and commutative, thanks to this exercise we are able to see it graphically as well. 
+What does separable mean? It means that we can translate a 2D convolution into two 1D convolutions, obtaining identical results. In essence we can first convolve over the X axis and then over the Y axis, this will result in less computations hence faster results.
+
+Other than that, that we can write the convolution in different ways, following different orders, but at the end we'll obtain the same results, thanks to the commutative propriety. "Analytically":
+
+convolution(convolution(I, Gx), Dx.t) = convolution(convolution(I, Dx), Gx.t)
+
+This can be seen graphically for both subpoints (3, 4) and (5, 6), the end images is the same although the convolutions are written in different ways. More precisly what we see for each image is:
+
+1) We obtain a smoother version of the original image, with an "expansion" of the white point in the middle (the Gaussian filter gives it a higher weight with respect to the others). The symmetry remains the same since the Gaussian Filter is symmetrical. As for all subpoints we use the separability propriety in order to use 1D convolutions. In this case both convolutions involve Gaussian filters.
+
+2 & 3) We can perform edge detection thanks to the convolutione done with the first derivative over the y axis (horizontal edges).
+
+4) ? 
+
+5 & 6) We can perform edge detection thanks to the convolutione done with the first derivative over the x axis (vertical edges).

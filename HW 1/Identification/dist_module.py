@@ -52,14 +52,12 @@ def dist_l2(x,y):
 def dist_chi2(x,y):
     
     # First of all we compute the divisor for each value 
-    div = x + y
+    div = (x+1) + (y+1)
     
     # if divisor_i is equal to 0 change with 1 in order to perform division and avoid division by 0
-    indices_zero = div == 0
-    div[indices_zero] = 1
     
     # After we compute the numerator of the equation, essentially it's the l2 distance
-    chi2_num = np.square(x - y)
+    chi2_num = np.square((x+1) - (y+1))
     
     # We divide the numerator by the denominator that we previously computed
     chi2_list = np.divide(chi2_num, div)

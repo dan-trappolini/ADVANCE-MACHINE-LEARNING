@@ -18,19 +18,7 @@ def get_half_width(sigma):
 
 def gauss(sigma):
     
-    # w_hat = get_half_width(sigma)
-    # w = 2*(w_hat) + 1
-    # sums = 0 
-    # Gx = []
-
-    # for i in range(w):
-    #     Gx.append(np.exp(-(i - w_hat) * (i - w_hat)/(2*sigma**2)))
-    #     sums = sums + Gx[i]  
-    # for i in range(w):
-    #     Gx[i] = Gx[i] / sums
-        
-    # x = np.arange(int(-3*sigma),int(3*sigma) + 1, 1)
-    
+   
     # start -> lower limit  of the interval
     # end -> upper limit of the interval
     # interval -> is the steps in the interval
@@ -98,7 +86,7 @@ def gaussdx(sigma):
     interval = 1
     
     # we then convert the list to a numpy array 
-    x = np.array(range(start, end, interval))
+    x = np.array(range(start, end+1, interval))
     
     Dx = -1/(np.sqrt(2*np.pi)*sigma**3)*x*np.exp(-x**2/(2*sigma**2))
     

@@ -12,7 +12,24 @@ The filter should be defined for all integer values x in the range [-3sigma,3sig
 The function should return the Gaussian values Gx computed at the indexes x
 """
 
+def get_half_width(sigma):
+    return round(3*sigma - 0.5)
+
+
 def gauss(sigma):
+    
+    # w_hat = get_half_width(sigma)
+    # w = 2*(w_hat) + 1
+    # sums = 0 
+    # Gx = []
+
+    # for i in range(w):
+    #     Gx.append(np.exp(-(i - w_hat) * (i - w_hat)/(2*sigma**2)))
+    #     sums = sums + Gx[i]  
+    # for i in range(w):
+    #     Gx[i] = Gx[i] / sums
+        
+    # x = np.arange(int(-3*sigma),int(3*sigma) + 1, 1)
     
     # start -> lower limit  of the interval
     # end -> upper limit of the interval
@@ -59,7 +76,7 @@ def gaussianfilter(img, sigma):
     smooth_img = conv2(first_convo, Fx, mode='same', boundary='fill')
 
 
-    smooth_img = Image.fromarray(smooth_img).convert('RGB') # reconvert image to RGB (otherwise the image will be green...)
+    smooth_img = Image.fromarray(smooth_img) # reconvert image to RGB (otherwise the image will be green...)
 
 
     return smooth_img
@@ -101,10 +118,9 @@ def gaussderiv(img, sigma):
     #     return np.convolve(x, Dx, "same")
         
     
-    # imgDx=np.apply_along_axis(func,axis=0, arr=img) #apply to all rows
-    # imgDy=np.apply_along_axis(func,axis=1, arr=img) #apply to all columns  
-    imgDx = conv(img, Dx, axis=0)
-    imgDy = conv(img, Dx, axis=1)
-    
+    #imgDx=np.apply_along_axis(func,axis=0, arr=img) #apply to all rows
+    #imgDy=np.apply_along_axis(func,axis=1, arr=img) #apply to all columns  
+    imgDx = conv(img, Dx, axis=1)
+    imgDy = conv(img, Dx, axis=0)
     return imgDx, imgDy
 

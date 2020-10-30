@@ -184,48 +184,46 @@ def dxdy_hist(img_gray, num_bins):
     assert img_gray.dtype == 'float', 'incorrect image type'
     
     
-    min_interval = -6
-    max_interval = 6
+    lower = -6
+    upper = 6
     
-    # defining the x and y derivatives of the image and
-    # defining the minimum and maximum range of the derivatives
-    derivx, derivy = gauss_module.gaussderiv(img_gray, 3)
-    derivx = np.clip(derivx, min_interval, max_interval)
-    derivy = np.clip(derivy, min_interval, max_interval) 
+    # We call the gaussderiv function in order to get the partial derivatives for x and y 
+    # Cap the range of derivative values is in the range [-6, 6]
+    Dx, Dy = gauss_module.gaussderiv(img_gray, 3)
+    Dx = np.clip(Dx, lower, upper)
+    Dy = np.clip(Dy, lower, upper) 
     
-    # stacking the derivatives to iterate over them
-    stacked = list(zip(derivx.reshape(-1), derivy.reshape(-1)))
+    # We stack them in order to simplify the iteration
+    stacked_deriv = list(zip(Dx.reshape(-1), Dy.reshape(-1)))
 
-    # the bin size is equal to the difference of the extremes
-    # divided by the input number of bins    
-    bin_size = (max_interval - min_interval)/num_bins
+    bin_size = (upper - lower)/num_bins
     
-    # filling the list's values with the equal-distanced bins
-    bins = [min_interval for _ in range(num_bins+1)]
-    previous = min_interval
+    # We fill up the list with bins of equal length
+    bins = [lower for x in range(num_bins+1)]
+    previous = lower
     for i in range(num_bins):
-        bin_ = previous + bin_size
-        bins[i+1] = bin_
-        previous = bin_
+        bin = previous + bin_size
+        bins[i+1] = bin
+        previous = bin
 
     # defining a 2D histogram  with "num_bins^2" number of entries
     hists = np.zeros((num_bins, num_bins))
     
     # filling the array's values with the frequencies of the 
     # pixels in the bins intervals
-    for i in range(len(stacked)):
+    for i in range(len(stacked_deriv)):
 
-        deriv_xy = [0,0]
+        Dxy = [0,0]
         for k in range(len(bins)):
-            if bins[k-1] <= stacked[i][0] < bins[k]:
-                deriv_xy[0] = k-1
-            if bins[k-1] <= stacked[i][1] < bins[k]:
-                deriv_xy[1] = k-1
+            if bins[k-1] <= stacked_deriv[i][0] < bins[k]:
+                Dxy[0] = k-1
+            if bins[k-1] <= stacked_deriv[i][1] < bins[k]:
+                Dxy[1] = k-1
                     
-        hists[deriv_xy[0],deriv_xy[1]] += 1
+        hists[Dxy[0],Dxy[1]] += 1
     
     hists = hists/np.sum(hists)
-    # return the histogram as a 1D vector
+    # Return the histogram as a 1D vector
     hists = hists.reshape(hists.size)
     return hists
 

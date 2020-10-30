@@ -13,7 +13,6 @@ sys.path.insert(0,filteringpath)
 import gauss_module
 
 
-
 #  compute histogram of image intensities, histogram should be normalized so that sum of all values equals 1
 #  assume that image intensity varies between 0 and 255
 #
@@ -181,74 +180,73 @@ def rg_hist(img_color_double, num_bins ):
 #  Note: you may use the function gaussderiv from the Filtering exercise (gauss_module.py)
 
 def dxdy_hist(img_gray, num_bins):
-    
     assert len(img_gray.shape) == 2, 'image dimension mismatch'
     assert img_gray.dtype == 'float', 'incorrect image type'
     
-    #Define a 2D histogram  with "num_bins^2" number of entries
+    
+    min_interval = -6
+    max_interval = 6
+    
+    # defining the x and y derivatives of the image and
+    # defining the minimum and maximum range of the derivatives
+    derivx, derivy = gauss_module.gaussderiv(img_gray, 3)
+    derivx = np.clip(derivx, min_interval, max_interval)
+    derivy = np.clip(derivy, min_interval, max_interval) 
+    
+    # stacking the derivatives to iterate over them
+    stacked = list(zip(derivx.reshape(-1), derivy.reshape(-1)))
+
+    # the bin size is equal to the difference of the extremes
+    # divided by the input number of bins    
+    bin_size = (max_interval - min_interval)/num_bins
+    
+    # filling the list's values with the equal-distanced bins
+    bins = [min_interval for _ in range(num_bins+1)]
+    previous = min_interval
+    for i in range(num_bins):
+        bin_ = previous + bin_size
+        bins[i+1] = bin_
+        previous = bin_
+
+    # defining a 2D histogram  with "num_bins^2" number of entries
     hists = np.zeros((num_bins, num_bins))
     
-    # The bin size is:
-    bin_size = 255 / num_bins
+    # filling the array's values with the frequencies of the 
+    # pixels in the bins intervals
+    for i in range(len(stacked)):
 
-    # We call the gaussderiv function in order to get the partial derivatives for x and y 
-    Dx, Dy = gauss_module.gaussderiv(img_gray, 3)
+        deriv_xy = [0,0]
+        for k in range(len(bins)):
+            if bins[k-1] <= stacked[i][0] < bins[k]:
+                deriv_xy[0] = k-1
+            if bins[k-1] <= stacked[i][1] < bins[k]:
+                deriv_xy[1] = k-1
+                    
+        hists[deriv_xy[0],deriv_xy[1]] += 1
     
-    # Now, we should create two arrays (Dx, Dy), for each pixel in the image
-    Dx =  np.array(Dx).flatten()
-    Dy = np.array(Dy).flatten()    
-    
-    # At this point we have three arrays of dimension 1 x n.pixels
-    # we should insert each pixel in one particular bin, we can do this by dividing each value by n.bins
-    Dx = np.floor((Dx/bin_size)).astype(np.int8)
-    Dy = np.floor((Dy/bin_size)).astype(np.int8)
-    
-    
-    # Cap the range of derivative values is in the range [-6, 6]
-    Dx[Dx>6] = 6
-    Dx[Dx<-6] = -6
-
-    Dy[Dy>6] = 6
-    Dy[Dy<-6] = -6
-
-    # Loop for each pixel i in the image = n. rows * n.col
-    n_pixels = len(img_gray)*len(img_gray[0])
-
-    # Loop for each pixel i in the image 
-    for i in range(n_pixels):
-
-        # Increment the histogram bin which corresponds to the R,G,B value of the pixel i
-        hists[Dx[i], Dy[i]] += 1
-
-        pass
-
-    # Normalize the histogram such that its integral (sum) is equal 1
-    hists = hists / n_pixels
-
-    # Return the histogram as a 1D vector
+    hists = hists/np.sum(hists)
+    # return the histogram as a 1D vector
     hists = hists.reshape(hists.size)
-    
     return hists
 
 
 def is_grayvalue_hist(hist_name):
-  if hist_name == 'grayvalue' or hist_name == 'dxdy':
-    return True
-  elif hist_name == 'rgb' or hist_name == 'rg':
-    return False
-  else:
-    assert False, 'unknown histogram type'
+    if hist_name == 'grayvalue' or hist_name == 'dxdy':
+        return True
+    elif hist_name == 'rgb' or hist_name == 'rg':
+        return False
+    else:
+        assert False, 'unknown histogram type'
 
 
 def get_hist_by_name(img, num_bins_gray, hist_name):
-  if hist_name == 'grayvalue':
-    return normalized_hist(img, num_bins_gray)
-  elif hist_name == 'rgb':
-    return rgb_hist(img, num_bins_gray)
-  elif hist_name == 'rg':
-    return rg_hist(img, num_bins_gray)
-  elif hist_name == 'dxdy':
-    return dxdy_hist(img, num_bins_gray)
-  else:
-    assert False, 'unknown distance: %s'%hist_name
-
+    if hist_name == 'grayvalue':
+        return normalized_hist(img, num_bins_gray)
+    elif hist_name == 'rgb':
+        return rgb_hist(img, num_bins_gray)
+    elif hist_name == 'rg':
+        return rg_hist(img, num_bins_gray)
+    elif hist_name == 'dxdy':
+        return dxdy_hist(img, num_bins_gray)
+    else:
+        assert False, 'unknown distance: %s'%hist_name

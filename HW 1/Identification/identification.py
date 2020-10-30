@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # Directory where we are currently
 import os
 os.getcwd()
-os.chdir(r'C:\Users\Luca\Desktop\-\Università\Magistrale\Secondo anno\Primo semestre\AML\HW 1\Scripts\Identification')
+
 
 import histogram_module
 import dist_module
@@ -61,7 +61,7 @@ num_bins_color = 5
 plt.subplot(1,2,2)
 hist_rgb = histogram_module.rgb_hist(img_color.astype('double'), num_bins_color)
 plt.bar(np.array(range(1,hist_rgb.size+1)),hist_rgb)
-plt.show()
+plt.tight_layout()
 
 #Compose and test RG histograms (histogram_module.rg_hist)
 plt.figure(3)
@@ -72,7 +72,7 @@ num_bins_color = 5
 plt.subplot(1,2,2)
 hist_rg = histogram_module.rg_hist(img_color.astype('double'), num_bins_color)
 plt.bar(np.array(range(1,hist_rg.size+1)),hist_rg)
-plt.show()
+plt.tight_layout()
 
 
 #Compose and test dxdy histograms (histogram_module.dxdy_hist)
@@ -86,7 +86,7 @@ plt.subplot(1,2,2)
 
 hist_dxdy = histogram_module.dxdy_hist(img_gray, num_bins_dxdy)
 plt.bar(np.array(range(1,hist_dxdy.size+1)),hist_dxdy)
-plt.show()
+plt.tight_layout()
 
 
 # %%
@@ -199,7 +199,7 @@ num_correct = sum( best_match == range(len(query_images)) )
 print('number of correct matches: %d (%f)\n'% (num_correct, 1.0 * num_correct / len(query_images)))
 
 
-
+# %%
 
 
 
@@ -216,20 +216,25 @@ query_images = [x.strip() for x in query_images]
 num_bins = 20;
 
 
-plt.figure(8)
-rpc_module.compare_dist_rpc(model_images, query_images, ['chi2', 'intersect', 'l2'], 'rg', num_bins, ['r', 'g', 'b'])
-plt.title('RG histograms')
-plt.show()
+# %%
+
+plt.figure(1, figsize=(15,10))
+
+dist_type = ['chi2', 'intersect', 'l2']
+hist_model = ['rg', 'rgb', 'dxdy']
+Binss = [5, 10, 15, 20, 40]
+for bins in Binss:
+    cols = ['r', 'g', 'b']
+    for i in range(1,4):
+        plt.subplot(1,3,i)
+        if i != 2:
+            rpc_module.compare_dist_rpc(model_images, query_images, dist_type, hist_model[i-1], bins, cols)
+            plt.title(hist_model[i-1] + ' histograms')
+        else:
+            rpc_module.compare_dist_rpc(model_images, query_images, dist_type, hist_model[i-1], bins // 2, cols)
+            plt.title(hist_model[i-1] + ' histograms')
+    plt.savefig("hist_bins"+str(bins)+".png", format='png', dpi=600)
+    plt.show()
 
 
-plt.figure(9)
-rpc_module.compare_dist_rpc(model_images, query_images, ['chi2', 'intersect', 'l2'], 'rgb', num_bins // 2, ['r', 'g', 'b'])
-plt.title('RGB histograms')
-plt.show()
-
-
-plt.figure(10)
-rpc_module.compare_dist_rpc(model_images, query_images, ['chi2', 'intersect', 'l2'], 'dxdy', num_bins, ['r', 'g', 'b'])
-plt.title('dx/dy histograms')
-plt.show()
 

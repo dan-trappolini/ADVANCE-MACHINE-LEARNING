@@ -1,10 +1,8 @@
-# import packages: numpy, math (you might need pi for gaussian functions)
 import numpy as np
 import math
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d as conv2
 from scipy.ndimage import convolve1d as conv
-from PIL import Image
 
 """
 Gaussian function taking as argument the standard deviation sigma
@@ -12,13 +10,8 @@ The filter should be defined for all integer values x in the range [-3sigma,3sig
 The function should return the Gaussian values Gx computed at the indexes x
 """
 
-def get_half_width(sigma):
-    return round(3*sigma - 0.5)
-
-
 def gauss(sigma):
     
-   
     # start -> lower limit  of the interval
     # end -> upper limit of the interval
     # interval -> is the steps in the interval
@@ -27,7 +20,7 @@ def gauss(sigma):
     interval = 1
     
     # we then convert the list to a numpy array 
-    x = np.array(range(start, end, interval))
+    x = np.array(range(start, end+1, interval))
     
     Gx = 1/np.sqrt(2*np.pi*sigma**2)*np.exp(-x**2/(2*sigma**2))
         
@@ -64,7 +57,7 @@ def gaussianfilter(img, sigma):
     smooth_img = conv2(first_convo, Fx, mode='same', boundary='fill')
 
 
-    smooth_img = Image.fromarray(smooth_img) # reconvert image to RGB (otherwise the image will be green...)
+    #smooth_img = Image.fromarray(smooth_img) # reconvert image to RGB (otherwise the image will be green...)
 
 
     return smooth_img
@@ -86,7 +79,7 @@ def gaussdx(sigma):
     interval = 1
     
     # we then convert the list to a numpy array 
-    x = np.array(range(start, end+1, interval))
+    x = np.array(range(start, end +1 , interval))
     
     Dx = -1/(np.sqrt(2*np.pi)*sigma**3)*x*np.exp(-x**2/(2*sigma**2))
     
@@ -101,14 +94,7 @@ def gaussderiv(img, sigma):
     img = gaussianfilter(img, sigma)
 
     Dx, x = gaussdx(sigma)
-    
-    # def func(x):
-    #     return np.convolve(x, Dx, "same")
-        
-    
-    #imgDx=np.apply_along_axis(func,axis=0, arr=img) #apply to all rows
-    #imgDy=np.apply_along_axis(func,axis=1, arr=img) #apply to all columns  
+
     imgDx = conv(img, Dx, axis=1)
     imgDy = conv(img, Dx, axis=0)
     return imgDx, imgDy
-

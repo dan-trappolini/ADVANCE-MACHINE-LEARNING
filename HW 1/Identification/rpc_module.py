@@ -6,23 +6,17 @@ import histogram_module
 import dist_module
 import match_module
 
-
-
+#Add the Filtering folder, to import the gauss_module.py file, where gaussderiv is defined (needed for dxdy_hist)
+import sys, os, inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+filteringpath = os.path.join(parentdir, 'Identification')
+sys.path.insert(0,filteringpath)
 # compute and plot the recall/precision curve
 #
 # D - square matrix, D(i, j) = distance between model image i, and query image j
 #
 # note: assume that query and model images are in the same order, i.e. correct answer for i-th query image is the i-th model image
-
-with open('/Users/yves/Desktop/Data_Science/second_year/AML/Assignment1/Identification/model.txt') as fp:
-    model_images = fp.readlines()
-model_images = ['/Users/yves/Desktop/Data_Science/second_year/AML/Assignment1/Identification/'+x.strip() for x in model_images] 
-#print(len(model_images))
-
-with open('/Users/yves/Desktop/Data_Science/second_year/AML/Assignment1/Identification/query.txt') as fp:
-    query_images = fp.readlines()
-query_images = ['/Users/yves/Desktop/Data_Science/second_year/AML/Assignment1/Identification/'+x.strip() for x in query_images] 
-#print(len(query_images))
 
 
 def plot_rpc(D, plot_color):
@@ -81,25 +75,4 @@ def compare_dist_rpc(model_images, query_images, dist_types, hist_type, num_bins
     # legend(dist_types, 'Location', 'Best')
     
     plt.legend( dist_types, loc='best')
-
-
-
-
-
-plt.figure(1, figsize=(12,4))
-
-dist_type = ['chi2', 'intersect', 'l2']
-hist_model = ['rg', 'rgb', 'dxdy']
-bins = 5
-cols = ['r', 'g', 'b']
-for i in range(1,4):
-    plt.subplot(1,3,i)
-    if i != 2:
-        compare_dist_rpc(model_images, query_images, dist_type, hist_model[i-1], bins, cols)
-        plt.title(hist_model[i-1] + ' histograms')
-    else:
-        compare_dist_rpc(model_images, query_images, dist_type, hist_model[i-1], bins // 2, cols)
-        plt.title(hist_model[i-1] + ' histograms')
-
-plt.show()
 

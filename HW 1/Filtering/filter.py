@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 # Directory where we are currently
 import os
 os.getcwd()
-os.chdir(r'C:\Users\Luca\Desktop\-\Università\Magistrale\Secondo anno\Primo semestre\AML\HW 1\Scripts\Filtering')
 
 import gauss_module
 

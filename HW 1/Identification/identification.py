@@ -222,10 +222,10 @@ plt.figure(1, figsize=(15,10))
 
 dist_type = ['chi2', 'intersect', 'l2']
 hist_model = ['rg', 'rgb', 'dxdy']
-Binss = [5, 10, 15, 20, 40]
+Binss = [10, 20, 30, 40]
 for bins in Binss:
     cols = ['r', 'g', 'b']
-    for i in range(1,4):
+    for i in range(1, 4):
         plt.subplot(1,3,i)
         if i != 2:
             rpc_module.compare_dist_rpc(model_images, query_images, dist_type, hist_model[i-1], bins, cols)

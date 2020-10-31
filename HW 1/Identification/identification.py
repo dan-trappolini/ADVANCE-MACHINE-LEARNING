@@ -4,6 +4,8 @@ from PIL import Image
 from numpy import histogram as hist  # call hist, otherwise np.histogram
 import matplotlib.pyplot as plt
 
+import pandas as pd
+from itertools import product 
 
 # Directory where we are currently
 import os
@@ -197,6 +199,43 @@ match_module.show_neighbors(model_images, query_images_vis, dist_type, hist_type
 # import ipdb; ipdb.set_trace()
 num_correct = sum( best_match == range(len(query_images)) )
 print('number of correct matches: %d (%f)\n'% (num_correct, 1.0 * num_correct / len(query_images)))
+
+
+# %%
+
+# All combinations
+
+def grid_search(model_images, query_images, dist_type, hist_type, num_bins):
+    
+
+    [best_match, D] = match_module.find_best_match(model_images, query_images, dist_type, hist_type, num_bins)
+
+    num_correct = sum(best_match == range(len(query_images)))
+    recog_rate = num_correct / len(query_images)
+
+    return [dist_type, hist_type, num_bins, num_correct, recog_rate]
+
+dist_list = ['chi2', 'l2','intersect']
+hist_list = ['grayvalue', 'rgb', 'rg','dxdy']
+num_bins = [10, 20 , 30, 40]
+parameters = list(product(dist_list,hist_list,num_bins))
+
+results = []
+for i in range(len(parameters)):
+    results += [grid_search(model_images, query_images,parameters[i][0],parameters[i][1],parameters[i][2])]
+
+# Store the results in a dataframe
+df = pd.DataFrame(results)
+
+df.columns = ['dist_type', 'hist_type', 'num_bins','correct','recog_rate']
+
+# Top 10 scores 
+df.sort_values('recog_rate', ascending=False).head(10)
+
+# Bottom 10 scores
+df.sort_values('recog_rate', ascending=False).tail(10)
+
+
 
 
 # %%

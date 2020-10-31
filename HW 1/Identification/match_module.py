@@ -110,3 +110,5 @@ def show_neighbors(model_images, query_images, dist_type, hist_type, num_bins):
         plt.show()
 
     return
+
+
